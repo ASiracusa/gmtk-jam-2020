@@ -34,6 +34,7 @@ public enum Keys
 
 public enum Element
 {
+    Normal,
     Fire,
     Ice,
     Water
@@ -43,5 +44,6 @@ public enum MovementPattern
 {
     Patrol,
     LedgeConscious,
-    RunAway
+    RunAway,
+    PlayerControlled
 }

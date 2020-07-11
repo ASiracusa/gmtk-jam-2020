@@ -9,16 +9,19 @@ public class PlayerManager : MonoBehaviour
 
     private int[] availableLetters;
     private Queue<Keys> expendedLetters;
-
-    public Rigidbody2D rb;
+    public bool cutscene;
+    
     public TMP_Text commandBar;
     private Creature body;
+
+    private GameObject camObject;
 
     // Start is called before the first frame update
     void Start()
     {
         current = this;
-        body = gameObject.GetComponent<Creature>();
+        body = transform.GetChild(0).gameObject.GetComponent<Creature>();
+        body.AssignCreatureType("Letre");
 
         availableLetters = new int[26];
         for (int i = 0; i < 26; i++)
@@ -26,37 +29,19 @@ public class PlayerManager : MonoBehaviour
             availableLetters[i] = 3;
         }
         expendedLetters = new Queue<Keys>();
+        cutscene = false;
 
         TypistManager.current.OnKeyPress += ExpendLetter;
         TypistManager.current.OnSpacePress += ExecuteCommand;
 
-        StartCoroutine(PlayerMovement());
+        camObject = GameObject.Find("Camera");
+        StartCoroutine(MoveCamera());
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
-
-    private IEnumerator PlayerMovement()
-    {
-        while (true)
-        {
-            if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
-            {
-                rb.velocity = new Vector2(5, rb.velocity.y);
-            }
-            else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
-            {
-                rb.velocity = new Vector2(-5, rb.velocity.y);
-            }
-            else
-            {
-                rb.velocity = new Vector2(0, rb.velocity.y);
-            }
-            yield return null;
-        }
     }
 
     private void ExpendLetter (Keys key)
@@ -89,5 +74,17 @@ public class PlayerManager : MonoBehaviour
         }
         
         commandBar.text = "";
+    }
+
+    private IEnumerator MoveCamera()
+    {
+        while (true)
+        {
+            if (!cutscene)
+            {
+                camObject.transform.position = Vector3.Lerp(camObject.transform.position, new Vector3(body.transform.position.x, body.transform.position.y + 3, -10), 0.04f);
+            }
+            yield return null;
+        }
     }
 }
