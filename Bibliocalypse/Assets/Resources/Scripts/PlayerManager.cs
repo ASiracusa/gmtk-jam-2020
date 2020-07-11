@@ -1,28 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager current;
 
     private int[] availableLetters;
+    private Queue<Keys> expendedLetters;
 
     public Rigidbody2D rb;
-    private Typist typist;
+    public TMP_Text commandBar;
+    private Creature body;
 
     // Start is called before the first frame update
     void Start()
     {
         current = this;
+        body = gameObject.GetComponent<Creature>();
 
         availableLetters = new int[26];
         for (int i = 0; i < 26; i++)
         {
             availableLetters[i] = 3;
         }
+        expendedLetters = new Queue<Keys>();
 
-        TypistManager.current.OnKeyPress += ExpendKey;
+        TypistManager.current.OnKeyPress += ExpendLetter;
+        TypistManager.current.OnSpacePress += ExecuteCommand;
 
         StartCoroutine(PlayerMovement());
     }
@@ -53,7 +59,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void ExpendKey (Keys key)
+    private void ExpendLetter (Keys key)
     {
         if (availableLetters[(int)key] <= 0)
         {
@@ -62,6 +68,26 @@ public class PlayerManager : MonoBehaviour
         else
         {
             availableLetters[(int)key] = availableLetters[(int)key] - 1;
+            expendedLetters.Enqueue(key);
+
+            commandBar.text = commandBar.text + key;
         }
+    }
+
+    private void ExecuteCommand ()
+    {
+        if (body.CheckAction(commandBar.text))
+        {
+
+        }
+        else {
+            while (expendedLetters.Count > 0)
+            {
+                Keys key = expendedLetters.Dequeue();
+                availableLetters[(int)key] = availableLetters[(int)key] + 1;
+            }
+        }
+        
+        commandBar.text = "";
     }
 }

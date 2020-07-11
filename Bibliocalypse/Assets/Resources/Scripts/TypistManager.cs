@@ -129,6 +129,12 @@ public class TypistManager : MonoBehaviour
             {
                 OnKeyPress(Keys.M);
             }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnSpacePress();
+            }
+
             yield return null;
         }
     }
@@ -137,5 +143,11 @@ public class TypistManager : MonoBehaviour
     public void KeyPress(Keys key)
     {
         OnKeyPress?.Invoke(key);
+    }
+
+    public event Action OnSpacePress;
+    public void SpacePress()
+    {
+        OnSpacePress?.Invoke();
     }
 }

@@ -31,3 +31,17 @@ public enum Keys
     N,
     M
 }
+
+public enum Element
+{
+    Fire,
+    Ice,
+    Water
+}
+
+public enum MovementPattern
+{
+    Patrol,
+    LedgeConscious,
+    RunAway
+}
