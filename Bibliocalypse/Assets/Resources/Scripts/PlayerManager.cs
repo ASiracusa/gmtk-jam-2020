@@ -32,6 +32,7 @@ public class PlayerManager : MonoBehaviour
         for (int i = 0; i < 26; i++)
         {
             availableLetters[i] = 3;
+            GameObject.Find("ScreenOverlay/Keys/" + (Letter)i + "/Letter").GetComponent<TMP_Text>().text = ((Letter)i).ToString();
         }
         expendedLetters = new Queue<Letter>();
         cutscene = false;
@@ -54,6 +55,10 @@ public class PlayerManager : MonoBehaviour
             availableLetters[(int)key] = availableLetters[(int)key] - 1;
             expendedLetters.Enqueue(key);
 
+            GameObject.Find("ScreenOverlay/Keys/" + key + "/Number").GetComponent<TMP_Text>().text = (availableLetters[(int)key] == 0) ? "" : availableLetters[(int)key].ToString();
+            float c = Mathf.Min(0.75f, (availableLetters[(int)key] + 1) * 0.05f);
+            GameObject.Find("ScreenOverlay/Keys/" + key).GetComponent<Image>().color = new Color(c, c, c);
+
             commandBar.text = commandBar.text + key;
         }
     }
@@ -62,13 +67,17 @@ public class PlayerManager : MonoBehaviour
     {
         if (body.CheckAction(commandBar.text))
         {
-
+            expendedLetters.Clear();
         }
         else {
             while (expendedLetters.Count > 0)
             {
                 Letter key = expendedLetters.Dequeue();
                 availableLetters[(int)key] = availableLetters[(int)key] + 1;
+
+                GameObject.Find("ScreenOverlay/Keys/" + key + "/Number").GetComponent<TMP_Text>().text = (availableLetters[(int)key] == 0) ? "" : availableLetters[(int)key].ToString();
+                float c = Mathf.Min(0.75f, (availableLetters[(int)key] + 1) * 0.05f);
+                GameObject.Find("ScreenOverlay/Keys/" + key).GetComponent<Image>().color = new Color(c, c, c);
             }
         }
         

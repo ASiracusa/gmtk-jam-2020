@@ -16,5 +16,8 @@ public class CreatureData : ScriptableObject
 
     public string spriteKind;
 
+    public string letterDrops;
+    public int lootCount;
+
     public List<MovementPattern> movementPattern;
 }

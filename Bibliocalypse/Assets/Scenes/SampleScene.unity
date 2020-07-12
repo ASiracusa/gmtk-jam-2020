@@ -4619,7 +4619,7 @@ GameObject:
   - component: {fileID: 961726208}
   - component: {fileID: 961726207}
   m_Layer: 11
-  m_Name: GrassyTilemap
+  m_Name: Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
