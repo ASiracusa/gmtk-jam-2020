@@ -10,17 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fe9e9162a842014e9b23d66eca9a01b, type: 3}
-  m_Name: IceSlime
+  m_Name: BasicSkeleton
   m_EditorClassIdentifier: 
-  health: 25
+  health: 30
   armor: 1
-  strength: 1.2
-  elementalDefense: 2
+  strength: 1
+  elementalDefense: 0
   moveset:
+  - FIRE
   - FROST
-  typingSpeed: 0.75
-  spaceBetweenWords: 3
-  spriteKind: Slime
-  letterDrops: fffrrrooosssttteeyyww
-  lootCount: 12
+  - FLOW
+  typingSpeed: 0.5
+  spaceBetweenWords: 2.5
+  spriteKind: Skeleton
+  letterDrops: fffrrlwste
+  lootCount: 10
   movementPattern: 00000000

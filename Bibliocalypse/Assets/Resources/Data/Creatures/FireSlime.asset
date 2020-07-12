@@ -16,7 +16,8 @@ MonoBehaviour:
   armor: 1
   strength: 1.2
   elementalDefense: 1
-  moveset: []
+  moveset:
+  - FIRE
   typingSpeed: 0.75
   spaceBetweenWords: 3
   spriteKind: Slime

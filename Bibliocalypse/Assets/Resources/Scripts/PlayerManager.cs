@@ -18,6 +18,7 @@ public class PlayerManager : MonoBehaviour
     private Slider healthBar;
 
     private GameObject camObject;
+    private Transform spawnPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -120,13 +121,58 @@ public class PlayerManager : MonoBehaviour
         while (Time.time - t < maxDuration)
         {
             duration = Time.time - t;
-            print("we in here boys");
             float angle = Random.Range(0, 2 * Mathf.PI);
             cam.transform.localPosition = new Vector3(intensity * Mathf.Cos(angle) * ((maxDuration - duration) / maxDuration), intensity * Mathf.Sin(angle) * ((maxDuration - duration) / maxDuration), cam.transform.localPosition.z);
             yield return null;
         }
 
         cam.transform.localPosition = Vector3.zero;
+        yield return null;
+    }
+
+    public void SetSpawn(Transform spawn)
+    {
+        spawnPoint = spawn;
+    }
+
+    public IEnumerator Respawn()
+    {
+        print("death start");
+        cutscene = true;
+
+        float t = Time.time;
+        while (Time.time - t < 0.5f)
+        {
+            print("death loop 1");
+            GameObject.Find("ScreenOverlay/BlackScreen").GetComponent<Image>().color = new Color(0f, 0f, 0f, 2f * (Time.time - t));
+            yield return null;
+        }
+        GameObject.Find("ScreenOverlay/BlackScreen").GetComponent<Image>().color = new Color(0f, 0f, 0f, 1f);
+
+        transform.position = spawnPoint.position + new Vector3(0, 1, 0);
+        for (int i = 0; i < 26; i++)
+        {
+            availableLetters[i] = availableLetters[i] / 2;
+            GameObject.Find("ScreenOverlay/Keys/" + (Letter)i + "/Number").GetComponent<TMP_Text>().text = (availableLetters[(int)(Letter)i] == 0) ? "" : availableLetters[(int)(Letter)i].ToString();
+            float c = Mathf.Min(0.75f, (availableLetters[i] + 1) * 0.05f);
+            GameObject.Find("ScreenOverlay/Keys/" + (Letter)i).GetComponent<Image>().color = new Color(c, c, c);
+        }
+        body.SetHealth(100);
+        camObject.transform.position = camObject.transform.position = new Vector3(body.transform.position.x, body.transform.position.y, -10);
+
+        yield return new WaitForSeconds(0.25f);
+
+        t = Time.time;
+        while (Time.time - t < 0.5f)
+        {
+            print("death loop 2");
+            GameObject.Find("ScreenOverlay/BlackScreen").GetComponent<Image>().color = new Color(0f, 0f, 0f, 2f * (0.5f - (Time.time - t)));
+            yield return null;
+        }
+        GameObject.Find("ScreenOverlay/BlackScreen").GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+
+        cutscene = false;
+
         yield return null;
     }
 }

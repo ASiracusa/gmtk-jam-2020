@@ -75,8 +75,10 @@ public class Constants
 
     public static void CompletelyDestroy(GameObject go)
     {
-        for(int i = go.transform.childCount - 1; i <= 0; i--)
+        Debug.Log(go.transform.childCount);
+        for(int i = go.transform.childCount - 1; i >= 0; i--)
         {
+            Debug.Log(go.transform.GetChild(i).gameObject.name);
             CompletelyDestroy(go.transform.GetChild(i).gameObject);
         }
 

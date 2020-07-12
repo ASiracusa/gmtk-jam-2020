@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
             }
             else if (enemy != null && Vector3.Distance(player.transform.position, enemy.transform.position) > REMOVAL_DISTANCE)
             {
-                Destroy(enemy);
+                Constants.CompletelyDestroy(enemy);
                 enemy = null;
             }
             yield return null;

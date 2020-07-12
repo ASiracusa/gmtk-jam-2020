@@ -8,6 +8,8 @@ public class ActionEmbodiment : MonoBehaviour
     private GameObject caster;
     private Rigidbody2D rb;
 
+    private bool moving;
+
     void Start()
     {
 
@@ -39,12 +41,20 @@ public class ActionEmbodiment : MonoBehaviour
 
     private IEnumerator Move()
     {
+        moving = true;
         if ((ProjectileType)action[ActionInfo.ProjType] == ProjectileType.Straight)
         {
             float directionMod = caster.transform.GetChild(0).localScale.x;
             while (true)
             {
-                rb.velocity = new Vector2((float)action[ActionInfo.ProjVel] * directionMod, 0);
+                if (moving)
+                {
+                    rb.velocity = new Vector2((float)action[ActionInfo.ProjVel] * directionMod, 0);
+                }
+                else
+                {
+                    rb.velocity = Vector2.zero;
+                }
                 yield return true;
             }
         }
@@ -57,7 +67,7 @@ public class ActionEmbodiment : MonoBehaviour
         if (collision.gameObject.layer.Equals(LayerMask.NameToLayer("Ground")))
         {
             print("hit a wall/ground");
-            Destroy(gameObject);
+            StartCoroutine(End());
         }
         else if (collision.gameObject != caster && !collision.gameObject.layer.Equals(LayerMask.NameToLayer("Pickup")))
         {
@@ -66,13 +76,15 @@ public class ActionEmbodiment : MonoBehaviour
             if ((bool)action[ActionInfo.ProjWeak])
             {
                 print("hit an enemy and fizzled");
-                Destroy(gameObject);
+                StartCoroutine(End());
             }
         }
     }
 
     private IEnumerator End()
     {
+        moving = false;
+
         ParticleSystem ps = transform.GetChild(0).GetComponent<ParticleSystem>();
         float startTime = Time.time;
         var emission = ps.emission;
@@ -82,6 +94,8 @@ public class ActionEmbodiment : MonoBehaviour
         {
             yield return null;
         }
+
+        Constants.CompletelyDestroy(gameObject);
 
         yield return null;
     }

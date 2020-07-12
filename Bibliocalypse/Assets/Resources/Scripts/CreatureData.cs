@@ -6,8 +6,12 @@ using UnityEngine;
 public class CreatureData : ScriptableObject
 {
     public int health;
+
     public float armor;
     public float strength;
+    public float speed;
+    public float jump;
+
     public Element elementalDefense;
 
     public string[] moveset;
