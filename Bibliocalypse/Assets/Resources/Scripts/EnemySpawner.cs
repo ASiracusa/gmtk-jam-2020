@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    private const float SPAWN_DISTANCE = 10;
-    private const float REMOVAL_DISTANCE = 15;
+    private const float MIN_SPAWN_DISTANCE = 8;
+    private const float MAX_SPAWN_DISTANCE = 12;
+    private const float REMOVAL_DISTANCE = 14;
 
     public string[] enemies;
 
@@ -21,17 +22,22 @@ public class EnemySpawner : MonoBehaviour
         GameObject player = PlayerManager.current.gameObject;
         while (true)
         {
-            if (enemy == null && Vector3.Distance(player.transform.position, transform.position) < SPAWN_DISTANCE) {
+            if (enemy == null && Vector3.Distance(player.transform.position, transform.position) < MAX_SPAWN_DISTANCE && Vector3.Distance(player.transform.position, transform.position) > MIN_SPAWN_DISTANCE) {
                 // spawn
-                GameObject creature = Instantiate(Resources.Load<GameObject>("Prefabs/Creature")) as GameObject;
-                CreatureData cd = Resources.Load<CreatureData>("Data/Creatures/" + enemies[(int)Random.Range(0, enemies.Length)]);
+                enemy = Instantiate(Resources.Load<GameObject>("Prefabs/Creature"), transform.position, Quaternion.identity) as GameObject;
+                enemy.GetComponent<Creature>().AssignCreatureType(enemies[(int)Random.Range(0, enemies.Length)], this);
             }
-            else if (enemy != null && Vector3.Distance(player.transform.position, transform.position) < REMOVAL_DISTANCE && Vector3.Distance(player.transform.position, enemy.transform.position) < SPAWN_DISTANCE)
+            else if (enemy != null && Vector3.Distance(player.transform.position, enemy.transform.position) > REMOVAL_DISTANCE)
             {
                 Destroy(enemy);
                 enemy = null;
             }
             yield return null;
         }
+    }
+
+    public void RemoveEnemy()
+    {
+        enemy = null;
     }
 }

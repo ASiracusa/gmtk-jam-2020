@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Creature : MonoBehaviour
 {
     public CreatureData creatureData;
 
     // Creature Data
-    private float health;
+    private int health;
     private float armor;
     private float strength;
     private Element elementalDefense;
@@ -15,8 +16,11 @@ public class Creature : MonoBehaviour
 
     // Physical Data
     private Rigidbody2D rb;
+    private EnemySpawner spawn;
 
     private bool onGround;
+    private bool invulnerable;
+    public bool dying;
 
     private AnimatorOverrideController aoc;
     private Animator animator;
@@ -24,9 +28,7 @@ public class Creature : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        cdBaseSprite = "nothing";
+        rb = transform.GetComponent<Rigidbody2D>();
 
         animator = transform.GetChild(0).gameObject.GetComponent<Animator>();
         aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
@@ -35,18 +37,23 @@ public class Creature : MonoBehaviour
         animator.runtimeAnimatorController = aoc;
     }
 
-    public void AssignCreatureType(string cdn)
+    public void AssignCreatureType(string cdn, EnemySpawner _spawn)
     {
-        CreatureData cd = Resources.Load<CreatureData>("Data/Creatures/" + cdn);
-        cdBaseSprite = cdn;
+        creatureData = Resources.Load<CreatureData>("Data/Creatures/" + cdn);
+        cdBaseSprite = creatureData.spriteKind;
+        print(cdBaseSprite);
 
-        health = cd.health;
-        armor = cd.armor;
-        strength = cd.strength;
-        elementalDefense = cd.elementalDefense;
-        moveset = cd.moveset;
+        spawn = _spawn;
 
-        if (cd.movementPattern.Contains(MovementPattern.PlayerControlled))
+        health = creatureData.health;
+        armor = creatureData.armor;
+        strength = creatureData.strength;
+        elementalDefense = creatureData.elementalDefense;
+        moveset = creatureData.moveset;
+
+        transform.GetChild(0).GetComponent<SpriteRenderer>().color = Constants.elementColors[elementalDefense];
+
+        if (creatureData.movementPattern.Contains(MovementPattern.PlayerControlled))
         {
             StartCoroutine(PlayerMovement());
         }
@@ -70,8 +77,6 @@ public class Creature : MonoBehaviour
             aoc["apex"] = Resources.Load<AnimationClip>("Animations/" + cdBaseSprite + "/" + cdBaseSprite + "Apex");
         if (Resources.Load<AnimationClip>("Animations/" + cdBaseSprite + "/" + cdBaseSprite + "Fall") != null)
             aoc["fall"] = Resources.Load<AnimationClip>("Animations/" + cdBaseSprite + "/" + cdBaseSprite + "Fall");
-
-
     }
 
     public bool CheckAction(string actionName)
@@ -85,7 +90,16 @@ public class Creature : MonoBehaviour
 
             if ((Target)actionData[ActionInfo.Target] == Target.Self)
             {
-                PerformActionOnSelf(actionData);
+                PerformActionOnSelf(actionData, strength);
+            }
+            else if ((Target)actionData[ActionInfo.Target] == Target.Projectile)
+            {
+                GameObject projectile = Instantiate(Resources.Load<GameObject>("ActionEmbodiments/" + actionData[ActionInfo.EmbodiShape]),
+                    new Vector3(transform.position.x + (transform.GetChild(0).localScale.x * (float)actionData[ActionInfo.SpawnX]), transform.position.y + (float)actionData[ActionInfo.SpawnY], 1f),
+                    Quaternion.identity);
+                projectile.GetComponent<ActionEmbodiment>().SetAction(actionData);
+                projectile.GetComponent<ActionEmbodiment>().SetCaster(gameObject);
+                projectile.GetComponent<ActionEmbodiment>().StartCoroutine(projectile.GetComponent<ActionEmbodiment>().Spawn());
             }
 
             return true;
@@ -105,12 +119,65 @@ public class Creature : MonoBehaviour
         yield return null;
     }
 
-    public void PerformActionOnSelf(Dictionary<ActionInfo, object> actionData)
+    public void PerformActionOnSelf(Dictionary<ActionInfo, object> actionData, float attackerStrength)
     {
         if ((Trait)actionData[ActionInfo.Trait] == Trait.Heal)
         {
             StartCoroutine(PassiveEffect(actionData));
+            StartCoroutine(HealthChangeIcon(actionData, (int)(float)actionData[ActionInfo.Potency], 0));
+
+            health = Mathf.Min(creatureData.health, health + (int)(float)actionData[ActionInfo.Potency]);
         }
+        if ((Trait)actionData[ActionInfo.Trait] == Trait.Damage && !dying && !invulnerable)
+        {
+            float multiplier = Constants.typeEffectivenesses[(int)actionData[ActionInfo.Element]][(int)elementalDefense];
+            int damage = (int)((float)actionData[ActionInfo.Potency] * multiplier * (attackerStrength / armor));
+            StartCoroutine(HealthChangeIcon(actionData, damage, multiplier));
+            print(damage);
+
+            health = Mathf.Max(0, health - damage);
+            print(health);
+
+            if (health <= 0)
+            {
+                StartCoroutine(Die());
+            }
+            else
+            {
+                StartCoroutine(InvincibilityFrames());
+            }
+        }
+    }
+
+    private IEnumerator HealthChangeIcon (Dictionary<ActionInfo, object> actionData, int total, float multiplier)
+    {
+        GameObject indicator = Instantiate(Resources.Load<GameObject>("Prefabs/HealthChangeIndicator"), transform.position, Quaternion.identity);
+        //int total = (int)(((Trait)actionData[ActionInfo.Trait] == Trait.Heal) ? actionData[ActionInfo.Potency] : (float)actionData[ActionInfo.Potency] * strength / armor);
+        
+        indicator.GetComponent<TMP_Text>().text = total.ToString();
+
+        if (multiplier == 1f)
+        {
+            indicator.GetComponent<TMP_Text>().color = new Color(0.8f, 0.6f, 0.2f);
+        }
+        else if (multiplier == 0f)
+        {
+            indicator.GetComponent<TMP_Text>().color = new Color(0.4f, 1f, 0.2f);
+        }
+        else if (multiplier == 2f)
+        {
+            indicator.GetComponent<TMP_Text>().color = new Color(0.8f, 0f, 0f);
+        }
+        else if (multiplier == 0.5f)
+        {
+            indicator.GetComponent<TMP_Text>().color = new Color(0.5f, 0.4f, 0.3f);
+        }
+
+        indicator.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 10);
+        yield return new WaitForSeconds(0.75f);
+        Destroy(indicator);
+
+        yield return null;
     }
 
     private IEnumerator PlayerMovement()
@@ -123,13 +190,13 @@ public class Creature : MonoBehaviour
                 if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow))
                 {
                     rb.velocity = new Vector2(10, rb.velocity.y);
-                    transform.localScale = new Vector3(8, 8, 1);
+                    transform.GetChild(0).localScale = new Vector3(1, 1, 1);
                     animator.SetBool("moving", true);
                 }
                 else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
                 {
                     rb.velocity = new Vector2(-10, rb.velocity.y);
-                    transform.localScale = new Vector3(-8, 8, 1);
+                    transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
                     animator.SetBool("moving", true);
                 }
                 else
@@ -139,7 +206,6 @@ public class Creature : MonoBehaviour
                 }
 
                 onGround = Physics2D.OverlapCircle(groundChecker.transform.position, 0.02f, LayerMask.GetMask("Ground"));
-                print(onGround + " " + groundChecker.transform.position);
 
                 if (onGround && Input.GetKeyDown(KeyCode.UpArrow))
                 {
@@ -179,5 +245,48 @@ public class Creature : MonoBehaviour
         yield return null;
     }
 
+    public int GetHealth ()
+    {
+        return health;
+    }
 
+    public float GetStrength()
+    {
+        return strength;
+    }
+
+    private IEnumerator InvincibilityFrames()
+    {
+        invulnerable = true;
+        yield return new WaitForSeconds(0.5f);
+        invulnerable = false;
+        yield return null;
+    }
+
+    private IEnumerator Die()
+    {
+        dying = true;
+
+        float t = Time.time;
+        while (Time.time - t < 0.5f)
+        {
+            if (transform.localScale.x == 1)
+            {
+                transform.localScale = new Vector3(0, transform.localScale.y, transform.localScale.z);
+            }
+            else
+            {
+                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+            }
+            yield return null;
+        }
+
+        if (spawn != null)
+        {
+            spawn.RemoveEnemy();
+        }
+        Destroy(gameObject);
+
+        yield return null;
+    }
 }

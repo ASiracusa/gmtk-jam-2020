@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager current;
 
     private int[] availableLetters;
-    private Queue<Keys> expendedLetters;
+    private Queue<Letter> expendedLetters;
     public bool cutscene;
     
     public TMP_Text commandBar;
     private Creature body;
+
+    private Slider healthBar;
 
     private GameObject camObject;
 
@@ -20,15 +23,17 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         current = this;
-        body = transform.GetChild(0).gameObject.GetComponent<Creature>();
-        body.AssignCreatureType("Letre");
+        body = transform.gameObject.GetComponent<Creature>();
+        body.AssignCreatureType("Letre", null);
+
+        healthBar = GameObject.Find("ScreenOverlay/HealthBar").GetComponent<Slider>();
 
         availableLetters = new int[26];
         for (int i = 0; i < 26; i++)
         {
             availableLetters[i] = 3;
         }
-        expendedLetters = new Queue<Keys>();
+        expendedLetters = new Queue<Letter>();
         cutscene = false;
 
         TypistManager.current.OnKeyPress += ExpendLetter;
@@ -38,13 +43,7 @@ public class PlayerManager : MonoBehaviour
         StartCoroutine(MoveCamera());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void ExpendLetter (Keys key)
+    private void ExpendLetter (Letter key)
     {
         if (availableLetters[(int)key] <= 0)
         {
@@ -68,7 +67,7 @@ public class PlayerManager : MonoBehaviour
         else {
             while (expendedLetters.Count > 0)
             {
-                Keys key = expendedLetters.Dequeue();
+                Letter key = expendedLetters.Dequeue();
                 availableLetters[(int)key] = availableLetters[(int)key] + 1;
             }
         }
@@ -82,7 +81,8 @@ public class PlayerManager : MonoBehaviour
         {
             if (!cutscene)
             {
-                camObject.transform.position = Vector3.Lerp(camObject.transform.position, new Vector3(body.transform.position.x, body.transform.position.y + 3, -10), 0.04f);
+                healthBar.value = body.GetHealth();
+                camObject.transform.position = Vector3.Lerp(camObject.transform.position, new Vector3(body.transform.position.x, body.transform.position.y, -10), 0.04f);
             }
             yield return null;
         }

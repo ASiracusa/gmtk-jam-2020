@@ -27,107 +27,107 @@ public class TypistManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                OnKeyPress(Keys.Q);
+                OnKeyPress(Letter.Q);
             }
             if (Input.GetKeyDown(KeyCode.W))
             {
-                OnKeyPress(Keys.W);
+                OnKeyPress(Letter.W);
             }
             if (Input.GetKeyDown(KeyCode.E))
             {
-                OnKeyPress(Keys.E);
+                OnKeyPress(Letter.E);
             }
             if (Input.GetKeyDown(KeyCode.R))
             {
-                OnKeyPress(Keys.R);
+                OnKeyPress(Letter.R);
             }
             if (Input.GetKeyDown(KeyCode.T))
             {
-                OnKeyPress(Keys.T);
+                OnKeyPress(Letter.T);
             }
             if (Input.GetKeyDown(KeyCode.Y))
             {
-                OnKeyPress(Keys.Y);
+                OnKeyPress(Letter.Y);
             }
             if (Input.GetKeyDown(KeyCode.U))
             {
-                OnKeyPress(Keys.U);
+                OnKeyPress(Letter.U);
             }
             if (Input.GetKeyDown(KeyCode.I))
             {
-                OnKeyPress(Keys.I);
+                OnKeyPress(Letter.I);
             }
             if (Input.GetKeyDown(KeyCode.O))
             {
-                OnKeyPress(Keys.O);
+                OnKeyPress(Letter.O);
             }
             if (Input.GetKeyDown(KeyCode.P))
             {
-                OnKeyPress(Keys.P);
+                OnKeyPress(Letter.P);
             }
             if (Input.GetKeyDown(KeyCode.A))
             {
-                OnKeyPress(Keys.A);
+                OnKeyPress(Letter.A);
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
-                OnKeyPress(Keys.S);
+                OnKeyPress(Letter.S);
             }
             if (Input.GetKeyDown(KeyCode.D))
             {
-                OnKeyPress(Keys.D);
+                OnKeyPress(Letter.D);
             }
             if (Input.GetKeyDown(KeyCode.F))
             {
-                OnKeyPress(Keys.F);
+                OnKeyPress(Letter.F);
             }
             if (Input.GetKeyDown(KeyCode.G))
             {
-                OnKeyPress(Keys.G);
+                OnKeyPress(Letter.G);
             }
             if (Input.GetKeyDown(KeyCode.H))
             {
-                OnKeyPress(Keys.H);
+                OnKeyPress(Letter.H);
             }
             if (Input.GetKeyDown(KeyCode.J))
             {
-                OnKeyPress(Keys.J);
+                OnKeyPress(Letter.J);
             }
             if (Input.GetKeyDown(KeyCode.K))
             {
-                OnKeyPress(Keys.K);
+                OnKeyPress(Letter.K);
             }
             if (Input.GetKeyDown(KeyCode.L))
             {
-                OnKeyPress(Keys.L);
+                OnKeyPress(Letter.L);
             }
             if (Input.GetKeyDown(KeyCode.Z))
             {
-                OnKeyPress(Keys.Z);
+                OnKeyPress(Letter.Z);
             }
             if (Input.GetKeyDown(KeyCode.X))
             {
-                OnKeyPress(Keys.X);
+                OnKeyPress(Letter.X);
             }
             if (Input.GetKeyDown(KeyCode.C))
             {
-                OnKeyPress(Keys.C);
+                OnKeyPress(Letter.C);
             }
             if (Input.GetKeyDown(KeyCode.V))
             {
-                OnKeyPress(Keys.V);
+                OnKeyPress(Letter.V);
             }
             if (Input.GetKeyDown(KeyCode.B))
             {
-                OnKeyPress(Keys.B);
+                OnKeyPress(Letter.B);
             }
             if (Input.GetKeyDown(KeyCode.N))
             {
-                OnKeyPress(Keys.N);
+                OnKeyPress(Letter.N);
             }
             if (Input.GetKeyDown(KeyCode.M))
             {
-                OnKeyPress(Keys.M);
+                OnKeyPress(Letter.M);
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
@@ -139,8 +139,8 @@ public class TypistManager : MonoBehaviour
         }
     }
 
-    public event Action<Keys> OnKeyPress;
-    public void KeyPress(Keys key)
+    public event Action<Letter> OnKeyPress;
+    public void KeyPress(Letter key)
     {
         OnKeyPress?.Invoke(key);
     }

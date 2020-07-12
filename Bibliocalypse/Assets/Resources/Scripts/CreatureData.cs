@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/CreatureData")]
 public class CreatureData : ScriptableObject
 {
-    public float health;
+    public int health;
     public float armor;
     public float strength;
     public Element elementalDefense;
