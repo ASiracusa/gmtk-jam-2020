@@ -6930,11 +6930,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1460977975}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &963194229
@@ -8988,6 +8988,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1368380196}
   m_CullTransparentMesh: 0
+--- !u!1 &1460977974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1460977975}
+  m_Layer: 0
+  m_Name: CameraAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1460977975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460977974}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 963194228}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1481066972
 GameObject:
   m_ObjectHideFlags: 0
@@ -12788,7 +12819,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FIREBALL
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 76ff8114b4cd0694fabd06fa7cb4fc82, type: 2}
   m_sharedMaterial: {fileID: -9145833082601836626, guid: 76ff8114b4cd0694fabd06fa7cb4fc82,
@@ -12858,13 +12889,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2032904626}
-    characterCount: 8
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -13743,7 +13774,7 @@ GameObject:
   - component: {fileID: 8442919257418465774}
   - component: {fileID: 2243591675619524780}
   - component: {fileID: 3599793683823693436}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13775,7 +13806,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 901407053267384679}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Sensors
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13957,7 +13988,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6639364350793147200}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: LeftEdgeSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14018,7 +14049,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3678970143671390313}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: RightEdgeSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14213,7 +14244,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6817418768657668895}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GroundSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14297,7 +14328,7 @@ GameObject:
   - component: {fileID: 6551959707769174261}
   - component: {fileID: 1566471341903130986}
   - component: {fileID: 8738523189741229096}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Letre
   m_TagString: Untagged
   m_Icon: {fileID: 0}

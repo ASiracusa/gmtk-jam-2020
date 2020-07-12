@@ -40,7 +40,7 @@ public class PlayerManager : MonoBehaviour
         TypistManager.current.OnKeyPress += ExpendLetter;
         TypistManager.current.OnSpacePress += ExecuteCommand;
 
-        camObject = GameObject.Find("Camera");
+        camObject = GameObject.Find("CameraAnchor");
         StartCoroutine(MoveCamera());
     }
 
@@ -95,5 +95,38 @@ public class PlayerManager : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    public void GainLetter (Letter letter, GameObject pickup)
+    {
+        availableLetters[(int)letter] = availableLetters[(int)letter] + 1;
+
+        GameObject.Find("ScreenOverlay/Keys/" + letter + "/Number").GetComponent<TMP_Text>().text = (availableLetters[(int)letter] == 0) ? "" : availableLetters[(int)letter].ToString();
+        float c = Mathf.Min(0.75f, (availableLetters[(int)letter] + 1) * 0.05f);
+        GameObject.Find("ScreenOverlay/Keys/" + letter).GetComponent<Image>().color = new Color(c, c, c);
+
+        GameObject pickupParent = pickup.transform.parent.gameObject;
+        Destroy(pickup);
+        Destroy(pickupParent);
+    }
+
+    public IEnumerator ShakeCamera(float intensity, float duration)
+    {
+        print("shakin'");
+        float maxDuration = duration;
+        float t = Time.time;
+        GameObject cam = GameObject.Find("CameraAnchor/Camera");
+
+        while (Time.time - t < maxDuration)
+        {
+            duration = Time.time - t;
+            print("we in here boys");
+            float angle = Random.Range(0, 2 * Mathf.PI);
+            cam.transform.localPosition = new Vector3(intensity * Mathf.Cos(angle) * ((maxDuration - duration) / maxDuration), intensity * Mathf.Sin(angle) * ((maxDuration - duration) / maxDuration), cam.transform.localPosition.z);
+            yield return null;
+        }
+
+        cam.transform.localPosition = Vector3.zero;
+        yield return null;
     }
 }

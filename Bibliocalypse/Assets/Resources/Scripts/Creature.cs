@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -41,7 +42,6 @@ public class Creature : MonoBehaviour
     {
         creatureData = Resources.Load<CreatureData>("Data/Creatures/" + cdn);
         cdBaseSprite = creatureData.spriteKind;
-        print(cdBaseSprite);
 
         spawn = _spawn;
 
@@ -133,11 +133,8 @@ public class Creature : MonoBehaviour
             float multiplier = Constants.typeEffectivenesses[(int)actionData[ActionInfo.Element]][(int)elementalDefense];
             int damage = (int)((float)actionData[ActionInfo.Potency] * multiplier * (attackerStrength / armor));
             StartCoroutine(HealthChangeIcon(actionData, damage, multiplier));
-            print(damage);
 
             health = Mathf.Max(0, health - damage);
-            print(health);
-
             if (health <= 0)
             {
                 StartCoroutine(Die());
@@ -159,6 +156,7 @@ public class Creature : MonoBehaviour
         if (multiplier == 1f)
         {
             indicator.GetComponent<TMP_Text>().color = new Color(0.8f, 0.6f, 0.2f);
+            PlayerManager.current.StartCoroutine(PlayerManager.current.ShakeCamera(0.25f, 0.15f));
         }
         else if (multiplier == 0f)
         {
@@ -167,15 +165,17 @@ public class Creature : MonoBehaviour
         else if (multiplier == 2f)
         {
             indicator.GetComponent<TMP_Text>().color = new Color(0.8f, 0f, 0f);
+            PlayerManager.current.StartCoroutine(PlayerManager.current.ShakeCamera(0.5f, 0.25f));
         }
         else if (multiplier == 0.5f)
         {
             indicator.GetComponent<TMP_Text>().color = new Color(0.5f, 0.4f, 0.3f);
+            PlayerManager.current.StartCoroutine(PlayerManager.current.ShakeCamera(0.1f, 0.05f));
         }
 
         indicator.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 10);
         yield return new WaitForSeconds(0.75f);
-        Destroy(indicator);
+        GameObject.Destroy(indicator);
 
         yield return null;
     }
@@ -206,11 +206,14 @@ public class Creature : MonoBehaviour
                 }
 
                 onGround = Physics2D.OverlapCircle(groundChecker.transform.position, 0.02f, LayerMask.GetMask("Ground"));
+                animator.SetBool("grounded", onGround);
 
                 if (onGround && Input.GetKeyDown(KeyCode.UpArrow))
                 {
                     rb.velocity = new Vector2(rb.velocity.x, 20);
                 }
+
+                animator.SetFloat("yVel", rb.velocity.y);
             }
             yield return null;
         }
@@ -267,26 +270,49 @@ public class Creature : MonoBehaviour
     {
         dying = true;
 
-        float t = Time.time;
-        while (Time.time - t < 0.5f)
+        if (!creatureData.movementPattern.Contains(MovementPattern.PlayerControlled))
         {
-            if (transform.localScale.x == 1)
+            float t = Time.time;
+            while (Time.time - t < 0.8f)
             {
-                transform.localScale = new Vector3(0, transform.localScale.y, transform.localScale.z);
+                if (transform.localScale.x == 1)
+                {
+                    transform.localScale = new Vector3(0, transform.localScale.y, transform.localScale.z);
+                }
+                else
+                {
+                    transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+                }
+                yield return null;
             }
-            else
-            {
-                transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
-            }
-            yield return null;
-        }
 
-        if (spawn != null)
-        {
-            spawn.RemoveEnemy();
+            for (int i = 0; i < creatureData.lootCount; i++)
+            {
+                int r = UnityEngine.Random.Range(0, creatureData.letterDrops.Length);
+                Letter letter = (Letter)Enum.Parse(typeof(Letter), creatureData.letterDrops.ToUpper().Substring(r, 1));
+
+                GameObject drop = Instantiate(Resources.Load<GameObject>("Prefabs/LetterDrop"), new Vector3(transform.position.x, transform.position.y + 0.24f, transform.position.z), Quaternion.identity);
+                drop.transform.GetChild(0).GetComponent<TMP_Text>().text = letter.ToString();
+                drop.name = letter.ToString();
+
+                drop.GetComponent<Rigidbody2D>().velocity = new Vector2(UnityEngine.Random.Range(-6, 6), UnityEngine.Random.Range(0, 6));
+            }
+
+            if (spawn != null)
+            {
+                spawn.RemoveEnemy();
+            }
+            Constants.CompletelyDestroy(gameObject);
         }
-        Destroy(gameObject);
 
         yield return null;
+    }
+
+    private IEnumerator Patrol()
+    {
+        while (true)
+        {
+            yield return null;
+        }
     }
 }

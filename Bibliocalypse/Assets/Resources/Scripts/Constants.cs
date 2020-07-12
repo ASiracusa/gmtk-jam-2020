@@ -72,4 +72,14 @@ public class Constants
         new float[] {1f, 0.5f, 1f, 2f },
         new float[] {1f, 2f, 0.5f, 1f }
     };
+
+    public static void CompletelyDestroy(GameObject go)
+    {
+        for(int i = go.transform.childCount - 1; i <= 0; i--)
+        {
+            CompletelyDestroy(go.transform.GetChild(i).gameObject);
+        }
+
+        GameObject.Destroy(go);
+    }
 }

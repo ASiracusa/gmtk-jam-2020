@@ -28,7 +28,6 @@ public class ActionEmbodiment : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         ParticleSystem ps = transform.GetChild(0).GetComponent<ParticleSystem>();
-        print(Resources.Load<Sprite>("Particles/Sprites/" + action[ActionInfo.AnimSprite]));
         ps.textureSheetAnimation.AddSprite(Resources.Load<Sprite>("Particles/Sprites/" + action[ActionInfo.AnimSprite]));
 
         var main = ps.main;
@@ -60,8 +59,9 @@ public class ActionEmbodiment : MonoBehaviour
             print("hit a wall/ground");
             Destroy(gameObject);
         }
-        else if (collision.gameObject != caster)
+        else if (collision.gameObject != caster && !collision.gameObject.layer.Equals(LayerMask.NameToLayer("Pickup")))
         {
+            print(collision.gameObject.name);
             collision.gameObject.GetComponent<Creature>().PerformActionOnSelf(action, caster.gameObject.GetComponent<Creature>().GetStrength());
             if ((bool)action[ActionInfo.ProjWeak])
             {

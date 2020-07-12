@@ -20,4 +20,6 @@ MonoBehaviour:
   typingSpeed: 0.75
   spaceBetweenWords: 3
   spriteKind: Slime
+  letterDrops: ffffiiiirrrreeeemmll
+  lootCount: 12
   movementPattern: 00000000
